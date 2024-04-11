@@ -5,7 +5,7 @@ Created on Thu Apr  4 11:36:37 2024
 @author: AA000139
 """
 
-from ashes import read_ashes_file
+from ..sep005_io_ashes.ashes import read_ashes_file
 from sdypy_sep005.sep005 import assert_sep005
 
 # Define file paths or path
