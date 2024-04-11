@@ -13,6 +13,7 @@ from sep005_io_ashes import read_ashes_file
 filepaths = {# Define file paths or path}
 signals = read_ashes_file(filepaths)
 
+```
 Acknowledgements
 ----------------
 This package was developed in the framework of the
