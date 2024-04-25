@@ -1,3 +1,3 @@
 __version__ = "0.0.1"
 
-from .ashes import read_ashes_file
+from .ashes import read_ashes_file  # noqa: F401
