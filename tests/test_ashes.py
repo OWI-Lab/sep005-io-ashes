@@ -17,7 +17,7 @@ def filepaths():
     foldername = Path(__file__).resolve().parent
     filepaths_ = {
         "Sensor Floater": "Sensor Floater.txt",
-        "Sensor Generator": "Sensor Generator.txt",
+        # "Sensor Generator": "Sensor Generator.txt",
         "Sensor Sea": "Sensor Sea.txt",
         "Sensor Total load [Hydro]": "Sensor Total load [Hydro].txt",
         "Sensor Demanded pitch controller": "Sensor Demanded pitch controller.txt",
