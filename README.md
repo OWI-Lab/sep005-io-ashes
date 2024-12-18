@@ -25,7 +25,9 @@ from sep005_io_ashes import read_ashes_file
 
 filepaths = # Define file paths or path
 statistics_start_time = # Define start time for signal
-signals = ReadAshes(filepaths, statistics_start_time)
+ashes_output = ReadAshes(filepaths, statistics_start_time)
+df_ashes = ashes_output.to_pandas()
+signals = ashes_ouput.to_sep005()
 
 ```
 Acknowledgements
