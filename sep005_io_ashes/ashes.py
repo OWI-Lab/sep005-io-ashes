@@ -6,16 +6,17 @@ Created on Thu Apr  4 15:38:12 2024
 """
 
 import pandas as pd
-import os 
+import os
 from datetime import datetime
 import re
+
 
 class ReadAshes():
 
     def __init__(self,
                  filepaths=dict[str],
                  statistic_start_time=None):
-        
+
         self.filepaths = filepaths
         if statistic_start_time is None:
             self.statistic_start_time = 0
@@ -34,16 +35,20 @@ class ReadAshes():
                     df.drop(range(6), inplace=True)
                     df.reset_index(drop=True, inplace=True)
                     df.columns = [
-                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1] if "Time" not in col else col for col in df.columns
+                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1]
+                        if "Time" not in col else col for col in df.columns
                     ]
+
                 elif "Sensor Blade [Time]" in filepath:
                     # For Blade file, skip 12 rows and drop 12 rows
                     df = pd.read_table(filepath, skiprows=12, dtype=str)
                     df.drop(range(6), inplace=True)
                     df.reset_index(drop=True, inplace=True)
                     df.columns = [
-                        f"{col} " + re.findall(r'\[.*?\]', filepath)[1][1:-1] if "Time" not in col else col for col in df.columns
+                        f"{col} " + re.findall(r'\[.*?\]', filepath)[1][1:-1]
+                        if "Time" not in col else col for col in df.columns
                     ]
+
                 elif "Sensor Node" in filepath:
                     # For Node file, skip 11 rows and drop 17 rows
                     df = pd.read_table(filepath, skiprows=11, dtype=str)
@@ -51,19 +56,23 @@ class ReadAshes():
                     df.dropna(inplace=True)
                     df.reset_index(drop=True, inplace=True)
                     df.columns = [
-                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1] if "Time" not in col else col for col in df.columns
+                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1]
+                        if "Time" not in col else col for col in df.columns
                     ]
-                
+
                 elif "Sensor Beam element" in filepath:
                     # For Node file, skip 11 rows and drop 17 rows
                     df = pd.read_table(filepath, skiprows=11, dtype=str)
                     df.drop(range(12), inplace=True)
                     df.reset_index(drop=True, inplace=True)
                     df.columns = [
-                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1] if "Time" not in col else col for col in df.columns
+                        f"{col} " + re.findall(r'\[.*?\]', filepath)[0][1:-1]
+                        if "Time" not in col else col for col in df.columns
                     ]
+
                 elif "Electrical" in filepath:
                     pass
+
                 else:
                     # For other files, skip 11 rows and drop 6 rows
                     df = pd.read_table(filepath, skiprows=11, dtype=str)
@@ -79,21 +88,21 @@ class ReadAshes():
                         ]
                 df = df.astype(float)
                 dfs.append(df)
-                
+
         combined_df = pd.concat(dfs, axis=1)
         combined_df = combined_df.T[~combined_df.T.index.duplicated()].T
         combined_df.columns = combined_df.columns.str.strip()
         combined_df.columns = [" ".join(col) for col in combined_df.columns.str.split()]
 
-        combined_df = combined_df[combined_df['Time [s]']>=self.statistic_start_time]
+        combined_df = combined_df[combined_df['Time [s]'] >= self.statistic_start_time]
         combined_df['Time [s]'] = combined_df['Time [s]'] - self.statistic_start_time
         combined_df.reset_index(inplace=True, drop=True)
 
         self.signals = combined_df
-    
+
     def to_pandas(self):
         return self.signals
-    
+
     def to_sep005(self):
         units = []
         # Extract units from column headers
