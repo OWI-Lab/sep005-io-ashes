@@ -32,4 +32,4 @@ Acknowledgements
 ----------------
 This package was developed within the framework of the
 ETF Project [Belfloat](https://www.owi-lab.be/bel-float) and
-the VLAIO DBC SBO [FOOS] (https://www.bluecluster.be/projecten/foos) 
+the VLAIO DBC SBO [FOOS](https://www.bluecluster.be/projecten/foos).
