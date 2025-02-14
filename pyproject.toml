@@ -5,10 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sep005-io-ashes"
 authors = [
-    {name = "Abdulelah Al-Ghuwaidi", email = "Abdulelah.Al-Ghuwaidi@vub.be"}
+    {name = "Abdulelah Al-Ghuwaidi", email = "Abdulelah.Al-Ghuwaidi@vub.be"},
+    {name = "Tim Reinhardt", email = "tim.reinhardt@vub.be"}
 ]
 maintainers = [
     {name = "Abdulelah Al-Ghuwaidi", email = "Abdulelah.Al-Ghuwaidi@vub.be"},
+    {name = "Tim Reinhardt", email = "tim.reinhardt@vub.be"},
     {name = "Arsen Melnikov", email = "melnikov.arsene@gmail.com"}
 ]
 description = "Transform Ashes .txt files with data into the data compliant with SDyPy SEP005"
@@ -44,6 +46,9 @@ dev = [
 
 [project.urls]
 Repository = "https://github.com/OWI-Lab/sep005-io-ashes"
+
+[tool.setuptools]
+packages = ["sep005_io_ashes"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}

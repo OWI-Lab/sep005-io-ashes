@@ -24,10 +24,14 @@ Using the package
 from sep005_io_ashes import read_ashes_file
 
 filepaths = # Define file paths or path
-signals = read_ashes_file(filepaths)
+statistics_start_time = # Define start time for signal
+ashes_output = ReadAshes(filepaths, statistics_start_time)
+df_ashes = ashes_output.to_pandas()
+signals = ashes_ouput.to_sep005()
 
 ```
 Acknowledgements
 ----------------
-This package was developed in the framework of the
-[Belfloat project](https://www.owi-lab.be/bel-float)
+This package was developed within the framework of the
+ETF Project [Belfloat](https://www.owi-lab.be/bel-float) and
+the VLAIO DBC SBO [FOOS](https://www.bluecluster.be/projecten/foos).
