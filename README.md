@@ -20,16 +20,8 @@ pip install -e .[dev]
 Using the package
 ------------------
 
-```
-from sep005_io_ashes import read_ashes_file
+TBD
 
-filepaths = # Define file paths or path
-statistics_start_time = # Define start time for signal
-ashes_output = ReadAshes(filepaths, statistics_start_time)
-df_ashes = ashes_output.to_pandas()
-signals = ashes_ouput.to_sep005()
-
-```
 Acknowledgements
 ----------------
 This package was developed within the framework of the
