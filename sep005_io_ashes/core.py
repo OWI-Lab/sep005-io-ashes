@@ -1066,7 +1066,7 @@ class DynamicResultsProcessor:
         dt = time_values[1] - time_values[0]
         fs = 1.0 / dt if dt != 0 else 0.0
 
-        signals = []
+        signals = {}
         for col in df.columns:
             if col == time_col:
                 continue
@@ -1088,7 +1088,7 @@ class DynamicResultsProcessor:
                 "fs": fs,
                 "unit_str": unit_str,
             }
-            signals.append(signal)
+            signals[channel_name] = signal
 
         return signals
 
