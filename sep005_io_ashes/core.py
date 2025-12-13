@@ -583,6 +583,38 @@ class DynamicResultsProcessor:
                 continue
 
         return sea_results
+    
+    def read_all_fatigue_sensors(self) -> Dict[str, Dict[str, pd.DataFrame]]:
+        """
+        Read Fatigue sensor data from all case folders.
+
+        Returns:
+            Nested dictionary: {case_name: {element_key: DataFrame}}
+        """
+        case_folders = self.discover_case_folders()
+        fatigue_results = {}
+        cache_key_base = "Fatigue"
+
+        for case_folder in case_folders:
+            try:
+                case_name = case_folder.name
+                cache_key = cache_key_base + '_' + case_name
+                if cache_key in self._cache:
+                    case_results = self._cache[cache_key]
+                else:
+                    case_results = self.reader.read_case_results(case_folder, read_target="Fatigue")
+                    self._cache[cache_key] = case_results
+
+                # Extract only rotor sensor data
+                case_fatigue = case_results["Fatigue"]
+
+                if case_fatigue:
+                    fatigue_results[case_name] = case_fatigue
+
+            except Exception:
+                continue
+
+        return fatigue_results
 
     def get_consolidated_node_data(self, node_name: str) -> pd.DataFrame:
         """
@@ -838,6 +870,43 @@ class DynamicResultsProcessor:
             col for col in consolidated_df.columns if col != "Load_Case"
         ]
         return consolidated_df[cols]
+    
+    def get_consolidated_fatigue_sensors(
+        self, fatigue_name: str
+    ) -> pd.DataFrame:
+        """
+        Get specific fatigue sensor data consolidated across all cases.
+
+        Args:
+            fatigue_name: fatigue identifier (e.g., "Fatigue")
+
+        Returns:
+            DataFrame with fatigue data from all cases, with case name as
+                additional column
+        """
+        fatigue_results = self.read_all_fatigue_sensors()
+
+        if not fatigue_results:
+            return pd.DataFrame()
+
+        consolidated_data = []
+        for case_name, case_fatigue in fatigue_results.items():
+            # Use element_name directly, not prefixed
+            if fatigue_name in case_fatigue:
+                fatigue_df = case_fatigue[fatigue_name].copy()
+                fatigue_df["Load_Case"] = case_name
+                consolidated_data.append(fatigue_df)
+
+        if not consolidated_data:
+            return pd.DataFrame()
+
+        consolidated_df = pd.concat(consolidated_data, ignore_index=True)
+
+        # Reorder columns to put Load_Case first
+        cols = ["Load_Case"] + [
+            col for col in consolidated_df.columns if col != "Load_Case"
+        ]
+        return consolidated_df[cols]
 
     def process_all_cases(self) -> Dict[str, Dict[str, pd.DataFrame]]:
         """
@@ -863,7 +932,7 @@ class DynamicResultsProcessor:
                     self._cache[cache_key] = case_results
                 # Flatten the nested dict
                 flat_results = {}
-                for key in ["Nodes", "Loads", "Fluid", "BeamElements", "Rotor", "Generator", "Sea"]:
+                for key in ["Nodes", "Loads", "Fluid", "BeamElements", "Rotor", "Generator", "Sea", "Fatigue"]:
                     flat_results.update(case_results.get(key, {}))
                 raw_results[case_name] = flat_results
 
@@ -1022,6 +1091,37 @@ class DynamicResultsProcessor:
                 # Get Sea names from the 'Sea' key
                 sea_names = list(case_results.get("Sea", {}).keys())
                 all_results[case_name] = sorted(sea_names)
+
+            except Exception:
+                continue
+
+        return all_results
+    
+    def list_available_fatigue_sensors(self) -> Dict[str, List[str]]:
+        """
+        Get overview of available fatigue sensors for each case.
+ 
+        Returns:
+            Dictionary mapping case names to list of available fatigue sensor
+            names
+        """
+        all_results = {}
+        case_folders = self.discover_case_folders()
+        cache_key_base = "Fatigue"
+
+        for case_folder in case_folders:
+            try:
+                case_name = case_folder.name
+                cache_key = cache_key_base + '_' + case_name
+                if cache_key in self._cache:
+                    case_results = self._cache[cache_key]
+                else:
+                    case_results = self.reader.read_case_results(case_folder, read_target="Fatigue")
+                    self._cache[cache_key] = case_results
+
+                # Get fatigue names from the 'Sea' key
+                fatigue_names = list(case_results.get("Fatigue", {}).keys())
+                all_results[case_name] = sorted(fatigue_names)
 
             except Exception:
                 continue

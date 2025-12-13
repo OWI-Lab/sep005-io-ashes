@@ -22,6 +22,7 @@ class AshesResults:
         "Rotor": "Rotor",
         "Generator": "Generator",
         "Sea": "Sea",
+        "Fatigue": "Fatigue ["
     }
 
 
@@ -316,6 +317,10 @@ class DynamicResultsReader(BaseResultsReader):
         keyword = AshesResults.SENSOR_FILENAME["Sea"]
         sea_files = self.find_sensor_files(time_sim_folder, keyword)
 
+        # Check for fatigue sensor file
+        keyword = AshesResults.SENSOR_FILENAME["Fatigue"]
+        fatigue_files = self.find_sensor_files(time_sim_folder, keyword)
+
         return (
             len(node_files) > 0
             or len(node_loads_files) > 0
@@ -324,6 +329,7 @@ class DynamicResultsReader(BaseResultsReader):
             or len(rotor_files) > 0
             or len(generator_files) > 0
             or len(sea_files) > 0
+            or len(fatigue_files) > 0
         )
 
     def read_case_results(
@@ -339,7 +345,8 @@ class DynamicResultsReader(BaseResultsReader):
             "BeamElements": {},
             "Rotor": {},
             "Generator": {},
-            "Sea": {},       # Add this line
+            "Sea": {},
+            "Fatigue": {},       # Add this line
         }
         
         time_sim_folder = case_folder / "Time simulation"
@@ -416,6 +423,16 @@ class DynamicResultsReader(BaseResultsReader):
                     sea_name = self._extract_sensor_name(sea_file)
                     results["Sea"][sea_name] = df
 
+        # Read fatigue files
+        if read_target in (None, "Fatigue"):
+            keyword = AshesResults.SENSOR_FILENAME["Fatigue"]
+            fatigue_files = self.find_sensor_files(time_sim_folder, keyword)
+            for fatigue_file in fatigue_files:
+                df = self._read_fatigue_element_file(fatigue_file)
+                if not df.empty:
+                    element_name = self._extract_element_name(fatigue_file)
+                    results["Fatigue"][element_name] = df
+
         return results
 
     def _read_node_file(self, file_path: Path) -> pd.DataFrame:
@@ -462,6 +479,13 @@ class DynamicResultsReader(BaseResultsReader):
         
     def _read_sea_sensor_file(self, file_path: Path) -> pd.DataFrame:
         """Read a Sea sensor file."""
+        try:
+            return self._read_ashes_sensor_file(file_path)
+        except Exception:
+            return pd.DataFrame()
+        
+    def _read_fatigue_sensor_file(self, file_path: Path) -> pd.DataFrame:
+        """Read a fatigue sensor file."""
         try:
             return self._read_ashes_sensor_file(file_path)
         except Exception:
