@@ -22,7 +22,7 @@ class AshesResults:
         "Rotor": "Rotor",
         "Generator": "Generator",
         "Sea": "Sea",
-        "Fatigue": "Fatigue ["
+        "Fatigue": "Fatigue [Element"
     }
 
 
@@ -428,7 +428,7 @@ class DynamicResultsReader(BaseResultsReader):
             keyword = AshesResults.SENSOR_FILENAME["Fatigue"]
             fatigue_files = self.find_sensor_files(time_sim_folder, keyword)
             for fatigue_file in fatigue_files:
-                df = self._read_fatigue_element_file(fatigue_file)
+                df = self._read_fatigue_sensor_file(fatigue_file)
                 if not df.empty:
                     element_name = self._extract_element_name(fatigue_file)
                     results["Fatigue"][element_name] = df

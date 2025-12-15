@@ -1119,7 +1119,7 @@ class DynamicResultsProcessor:
                     case_results = self.reader.read_case_results(case_folder, read_target="Fatigue")
                     self._cache[cache_key] = case_results
 
-                # Get fatigue names from the 'Sea' key
+                # Get fatigue names from the 'Fatigue' key
                 fatigue_names = list(case_results.get("Fatigue", {}).keys())
                 all_results[case_name] = sorted(fatigue_names)
 
